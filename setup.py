@@ -26,6 +26,7 @@ setuptools.setup(
     ],
     python_requires=">=3.8",
     install_requires=[
+        "Pillow>=9.3",
         "tqdm",
         "torch==1.13.1",
         "torchvision==0.14.1",
@@ -33,6 +34,7 @@ setuptools.setup(
         "numpy",
         "matplotlib",
         "scikit-learn",
+        "opencv-python",
     ],
     extras_require={
         "dev": [
