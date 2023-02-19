@@ -32,11 +32,7 @@ def split_image(
         out_path = Path(out_path)
 
     img_name = str(img_path.name).split(".")[0]
-    img_format = str(img_path.name).split(".")[-1]
-
     img = open_img(img_path)
-    split_pos = 0
-
     subfolder = out_path / img_name
 
     try:
@@ -48,20 +44,18 @@ def split_image(
         logger.warning("Check the image name or choose a different save directory")
 
     for split, yi, xi in split_generator(img, win_shape, shift_shape):
-        split_name = "{name}_win_{hw}_{ww}_sh_{hs}_{ws}_pos_{yi}_{xi}.{form}".format(
+        split_name = "{name}_win_{hw}_{ww}_sh_{hs}_{ws}_pos_{yi}_{xi}.png".format(
             name=img_name,
             hw=win_shape[0],
             ww=win_shape[1],
             hs=shift_shape[0],
-            ws=win_shape[1],
+            ws=shift_shape[1],
             yi=yi,
             xi=xi,
-            form=img_format,
         )
         pil_img = fromarray(split)
 
         pil_img.save(subfolder / split_name)
-        split_pos += 1
 
 
 def split_generator(
