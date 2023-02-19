@@ -1,11 +1,5 @@
 import numpy as np
 import pytest
-from pathlib import Path
-
-
-@pytest.fixture
-def lena_path(assets: Path) -> Path:
-    return assets / "lena.jpg"
 
 
 @pytest.fixture
