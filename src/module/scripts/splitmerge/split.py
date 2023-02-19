@@ -22,7 +22,7 @@ def split_image(
         img_path (Union[str, Path]): path to image
         win_shape (Tuple[ShapeT, ShapeT]): sliding windows shape (height, width)
         shift_shape (Tuple[ShapeT, ShapeT]): shift shape (y-shift, x-shift)
-        out_path (Union[str, Path]): folder where to save; 
+        out_path (Union[str, Path]): folder where to save;
             splits will be placed into subfolder
     """
     if isinstance(img_path, str):
@@ -32,7 +32,7 @@ def split_image(
         out_path = Path(out_path)
 
     img_name = str(img_path.name).split(".")[0]
-    img = open_img(img_path)
+    npimg = np.array(open_img(img_path))
     subfolder = out_path / img_name
 
     try:
@@ -43,13 +43,21 @@ def split_image(
         )
         logger.warning("Check the image name or choose a different save directory")
 
-    for split, yi, xi in split_generator(img, win_shape, shift_shape):
+    if npimg.ndim == 3:
+        img_h, img_w, _ = npimg.shape
+    else:
+        img_h, img_w = npimg.shape
+
+    px_h, px_w = _shape_converter(win_shape, img_h, img_w)
+    px_h_shift, px_w_shift = _shape_converter(shift_shape, img_h, img_w)
+
+    for split, yi, xi in split_generator(npimg, (px_h, px_w), (px_h_shift, px_w_shift)):
         split_name = "{name}_win_{hw}_{ww}_sh_{hs}_{ws}_pos_{yi}_{xi}.png".format(
             name=img_name,
-            hw=win_shape[0],
-            ww=win_shape[1],
-            hs=shift_shape[0],
-            ws=shift_shape[1],
+            hw=px_h,
+            ww=px_w,
+            hs=px_h_shift,
+            ws=px_w_shift,
             yi=yi,
             xi=xi,
         )
@@ -59,9 +67,9 @@ def split_image(
 
 
 def split_generator(
-    img: ImgT,
-    win_shape: Tuple[ShapeT, ShapeT],
-    shift_shape: Tuple[ShapeT, ShapeT],
+    img: np.ndarray,
+    win_shape: Tuple[int, int],
+    shift_shape: Tuple[int, int],
 ) -> Generator[Tuple[np.ndarray, int, int], None, None]:
     """Generate splits for the image with sliding window.
 
@@ -75,19 +83,17 @@ def split_generator(
     Yields:
         Generator[np.ndarray, None, None]: current split
     """
-    npimg = np.array(img)
-
-    if len(npimg.shape) == 3:
-        img_h, img_w, _ = npimg.shape
+    if img.ndim == 3:
+        img_h, img_w, _ = img.shape
     else:
-        img_h, img_w = npimg.shape
+        img_h, img_w = img.shape
 
-    px_h, px_w = _shape_converter(win_shape, img_h, img_w)
-    px_h_shift, px_w_shift = _shape_converter(shift_shape, img_h, img_w)
+    px_h, px_w = win_shape
+    px_h_shift, px_w_shift = shift_shape
 
     for yi in _make_grid(img_h, px_h_shift, px_h):
         for xi in _make_grid(img_w, px_w_shift, px_w):
-            yield npimg[yi : yi + px_h, xi : xi + px_w], yi, xi
+            yield img[yi : yi + px_h, xi : xi + px_w], yi, xi
 
 
 def _shape_converter(
