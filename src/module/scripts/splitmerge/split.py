@@ -22,7 +22,8 @@ def split_image(
         img_path (Union[str, Path]): path to image
         win_shape (Tuple[ShapeT, ShapeT]): sliding windows shape (height, width)
         shift_shape (Tuple[ShapeT, ShapeT]): shift shape (y-shift, x-shift)
-        out_path (Union[str, Path]): folder where to save; splits will be placed into subfolder
+        out_path (Union[str, Path]): folder where to save; 
+            splits will be placed into subfolder
     """
     if isinstance(img_path, str):
         img_path = Path(img_path)
@@ -36,6 +37,16 @@ def split_image(
     img = open_img(img_path)
     split_pos = 0
 
+    subfolder = out_path / img_name
+
+    try:
+        subfolder.mkdir()
+    except FileExistsError:
+        logger.warning(
+            "The image {name} has already been processed.".format(name=img_name),
+        )
+        logger.warning("Check the image name or choose a different save directory")
+
     for split, yi, xi in split_generator(img, win_shape, shift_shape):
         split_name = "{name}_win_{hw}_{ww}_sh_{hs}_{ws}_pos_{yi}_{xi}.{form}".format(
             name=img_name,
@@ -48,15 +59,6 @@ def split_image(
             form=img_format,
         )
         pil_img = fromarray(split)
-        subfolder = out_path / img_name
-
-        try:
-            subfolder.mkdir()
-        except FileExistsError:
-            logger.warning(
-                "The image {name} has already been processed.".format(name=img_name)
-            )
-            logger.warning("Check the image name or choose a different save directory")
 
         pil_img.save(subfolder / split_name)
         split_pos += 1
