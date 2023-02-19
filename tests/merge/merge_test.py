@@ -23,6 +23,7 @@ def test_simple_get_params():
         ((32, 32), (32, 32)),
         ((32, 64), (17, 23)),
         ((800, 800), (3, 3)),
+        ((0.2, 0.2), (0.1, 0.1)),
     ],
 )
 def test_merge_diff_shapes(
@@ -41,6 +42,7 @@ def test_merge_diff_shapes(
         ((32, 32), (32, 32)),
         ((32, 64), (17, 23)),
         ((800, 800), (3, 3)),
+        ((0.2, 0.2), (0.1, 0.1)),
     ],
 )
 def test_merge_diff_shapes_one_channel(
