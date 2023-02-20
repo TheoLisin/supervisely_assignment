@@ -1,8 +1,12 @@
 import cv2
 from typing import Iterator, Tuple
 from pathlib import Path
+from tqdm import tqdm
+from logging import getLogger
 
 from module.scripts.davis_merge.annotation import PathT
+
+logger = getLogger(__name__)
 
 
 def sequence_to_video(
@@ -26,12 +30,13 @@ def sequence_to_video(
     save_path_with_name = str(Path(save_path) / f"{name}.mp4")
     writer = cv2.VideoWriter(save_path_with_name, fourcc, framerate, (size[1], size[0]))
 
-    for frame in frames:
+    for frame in tqdm(frames, desc="Creation awesome video:"):
         if frame.shape != size:
             frame = _normalize_frame_size(frame, size)
         writer.write(frame)
 
     writer.release()
+    logger.info("Video is ready!")
 
 
 def _normalize_frame_size(frame: cv2.Mat, size: Tuple[int, int, int]) -> cv2.Mat:
