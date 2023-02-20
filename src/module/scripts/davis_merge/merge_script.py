@@ -23,6 +23,8 @@ class WorkerArgs(NamedTuple):
 def create_davis_video(
     images: PathT,
     annotations: PathT,
+    path_to_save: PathT,
+    name: str,
     n_workers: int = 1,
     framerate: float = 15.0,
     alpha: float = 0.5,
@@ -30,9 +32,12 @@ def create_davis_video(
 ) -> None:
     """Stuck all DAVIS frames to one video with annotation.
 
+
     Args:
         images (PathT): folder with subfolders containing images.
         annotations (PathT): folder with subfolders containing annotations.
+        path_to_save (PathT): path to save video
+        name (str): name of created video
         n_workers (int): Number of subprocess for parallel image annotation.
             Defaults to 1.
         framerate (float): Defaults to 15.0.
@@ -69,7 +74,7 @@ def create_davis_video(
     size = (height, width, 3)
 
     final_seq = chain(*fs)
-    sequence_to_video(final_seq, ".", "test123", size=size, framerate=framerate)
+    sequence_to_video(final_seq, path_to_save, name, size=size, framerate=framerate)
 
 
 def _subprocess_sequence_builder(args: WorkerArgs) -> List[cv2.Mat]:
