@@ -83,5 +83,5 @@ def _subprocess_sequence_builder(args: WorkerArgs) -> List[cv2.Mat]:
     annots = args.annotations / args.folder_name
     img_seq = annotate_image_sequence(imgs, annots, args.alpha, args.border_thickness)
 
-    logger.info("Worker finished adding annotations.")
+    logger.info(f"Worker finished adding annotations to '{args.folder_name}'.")
     return img_seq
