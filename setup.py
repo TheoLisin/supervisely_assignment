@@ -50,9 +50,9 @@ setuptools.setup(
             "pytest-dotenv",
         ],
     },
-    # entry_points={
-    #     "console_scripts": [
-    #         "train = mil_autoencoder.__main__:main",
-    #     ],
-    # },
+    entry_points={
+        "console_scripts": [
+            "merge_davis = module.scripts.davis_merge.__main__:main",
+        ],
+    },
 )
