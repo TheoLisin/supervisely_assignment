@@ -131,3 +131,9 @@ dmypy.json
 .vscode/
 # Data
 tests/assets/DAVIS
+src/module/cv/assets
+src/module/cv/generation/back
+src/module/cv/generation/prim
+src/module/cv/generation/generated_data
+
+src/module/scripts/nuscenes_cloud/data
