@@ -35,6 +35,7 @@ setuptools.setup(
         "matplotlib",
         "scikit-learn",
         "opencv-python",
+        "imutils",
     ],
     extras_require={
         "dev": [
