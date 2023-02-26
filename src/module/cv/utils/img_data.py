@@ -1,4 +1,5 @@
 import cv2
+from numpy.random import Generator
 from dataclasses import dataclass
 from typing import Optional, Tuple
 
@@ -25,6 +26,7 @@ class PrimitiveObject(object):
 
 @dataclass
 class GenParams(object):
+    generator: Generator
     w_limits: Tuple[int, int]
     h_limits: Tuple[int, int]
     prim_limit: int

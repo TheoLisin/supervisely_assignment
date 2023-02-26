@@ -1,8 +1,9 @@
 import os
-from pathlib import Path
 import cv2
 import numpy as np
 import imutils
+from numpy.random import Generator
+from pathlib import Path
 from typing import Dict, List, Tuple, TypeVar
 
 from module.cv.utils.img_data import ClassProps, PrimitiveObject, GenParams
@@ -126,28 +127,28 @@ def add_primitive(back: cv2.Mat, primitive: PrimitiveObject) -> cv2.Mat:
     return back * (1 - mask) + prim * mask
 
 
-def random_crop(img: cv2.Mat, shape: Tuple[int, int]) -> cv2.Mat:
+def random_crop(img: cv2.Mat, shape: Tuple[int, int], gen: Generator) -> cv2.Mat:
     """Сuts a random piece of a given shape."""
     h, w = img.shape[:2]
     nh, nw = shape
-    y = np.random.randint(0, h - nh)
-    x = np.random.randint(0, w - nw)
+    y = gen.integers(0, h - nh)
+    x = gen.integers(0, w - nw)
     return img[y : y + nh, x : x + nw]
 
 
-def random_sample(arr: List[AnyT]) -> AnyT:
-    ind = np.random.randint(0, len(arr))
+def random_sample(arr: List[AnyT], gen: Generator) -> AnyT:
+    ind = gen.integers(0, len(arr))
     return arr[ind]
 
 
-def random_border(img: cv2.Mat, size: Tuple[int, int]) -> cv2.Mat:
+def random_border(img: cv2.Mat, size: Tuple[int, int], gen: Generator) -> cv2.Mat:
     h, w = size
     cur_h, cur_w = img.shape[:2]
     dh = h - cur_h
     dw = w - cur_w
-    top = np.random.randint(0, dh + 1)
+    top = gen.integers(0, dh + 1)
     btm = dh - top
-    left = np.random.randint(0, dw + 1)
+    left = gen.integers(0, dw + 1)
     rgh = dw - left
 
     return cv2.copyMakeBorder(
@@ -170,22 +171,23 @@ def random_change_prim(
     returns a primitive whose (transparent) 
     background is stretched to the given size."""
     nh, nw = final_size
-    angle = np.random.randint(*gen_params.rotate)
-    size_factor = np.random.uniform(*gen_params.size_factor)
+    angle = gen_params.generator.integers(*gen_params.rotate)
+    size_factor = gen_params.generator.uniform(*gen_params.size_factor)
     primitive = rotate_and_resize(primitive, angle, size_factor)
-    primitive = random_border(primitive, (nh, nw))
+    primitive = random_border(primitive, (nh, nw), gen=gen_params.generator)
     return primitive
 
 
 def random_class_random_image_load(
     classes_path: List[str],
     cls_colors: Dict[str, Tuple[int, int, int]],
+    gen: Generator,
 ) -> Tuple[cv2.Mat, ClassProps]:
-    prim_cls = Path(random_sample(classes_path))
+    prim_cls = Path(random_sample(classes_path, gen))
     name = prim_cls.name
     cp = ClassProps(name, color=cls_colors[name])
     imgs = os.listdir(prim_cls)
-    img_name = random_sample(imgs)
+    img_name = random_sample(imgs, gen)
     return cv2.imread(str(prim_cls / img_name), cv2.IMREAD_UNCHANGED), cp
 
 
@@ -196,19 +198,19 @@ def generate_pic(
     cls_colors: Dict[str, Tuple[int, int, int]],
 ) -> Tuple[cv2.Mat, cv2.Mat]:
     """Generate new picture and ground truth annotation."""
-    bg_ind = np.random.randint(0, len(back_paths))
-    bg = cv2.imread(back_paths[bg_ind], cv2.IMREAD_UNCHANGED)
+    bg_path = random_sample(back_paths, gen=gen_params.generator)
+    bg = cv2.imread(bg_path, cv2.IMREAD_UNCHANGED)
 
-    nh = np.random.randint(*gen_params.h_limits)
-    nw = np.random.randint(*gen_params.w_limits)
+    nh = gen_params.generator.integers(*gen_params.h_limits)
+    nw = gen_params.generator.integers(*gen_params.w_limits)
 
-    bg = random_crop(bg, (nh, nw))
+    bg = random_crop(bg, (nh, nw), gen_params.generator)
     annot = np.zeros((nh, nw, 4), dtype=np.uint8)
-    prim_num = np.random.randint(1, max(2, gen_params.prim_limit + 1))
+    prim_num = gen_params.generator.integers(1, max(2, gen_params.prim_limit + 1))
 
     for _ in range(prim_num):
         primitive, class_props = random_class_random_image_load(
-            classes_path, cls_colors
+            classes_path, cls_colors, gen=gen_params.generator
         )
         primitive = imutils.resize(primitive, width=nw)
         primitive = random_change_prim(primitive, gen_params, (nh, nw))
@@ -220,10 +222,10 @@ def generate_pic(
         bg = cv2.GaussianBlur(bg, gen_params.gaus_blur, cv2.BORDER_DEFAULT)
     
     # add light
-    cx = np.random.randint(50, nw - 50)
-    cy = np.random.randint(50, nw - 50)
-    rot = np.random.randint(*gen_params.rotate)
-    inten = np.random.ranf() * 0.4 + 0.5
+    cx = gen_params.generator.integers(50, nw - 50)
+    cy = gen_params.generator.integers(50, nw - 50)
+    rot = gen_params.generator.integers(*gen_params.rotate)
+    inten = gen_params.generator.random() * 0.4 + 0.5
     bg = add_gausian_light(bg, (cx, cy), nw / 2, nh // 2, rot, inten, 255)
 
     return bg, annot
