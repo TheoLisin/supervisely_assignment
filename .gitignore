@@ -135,5 +135,9 @@ src/module/cv/assets
 src/module/cv/generation/back
 src/module/cv/generation/prim
 src/module/cv/generation/generated_data
+src/module/cv/generation/generated_test_data
+src/module/cv/generation/prim_v2
+src/module/cv/generation/generated_data_v2
+src/module/cv/generation/generated_test_data_v2
 
 src/module/scripts/nuscenes_cloud/data
