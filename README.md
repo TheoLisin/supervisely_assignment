@@ -93,6 +93,12 @@ Clickable image.
 
 
 # CV
-IN PRODUCTION
+[Report](src/module/cv/README.md)
+
+## Experiment structure
+- [Notebook](src/module/cv/generation/generate_primitives.ipynb) with primitive generation functionality. Allows you to simply adjust the generation model and has a simple UI to control it.
+- [Fuctions](src/module/cv/utils/constructor.py) for random image generation: putting created primitives on given backgrounds, saving created image and annotation.
+- Simple classification model. Fixed for every experiment.
+
 <!-- - rembg странности с зависимостями при установке
 - backgroundremover плохой код библиотеки с циклическими импортами. Из-за чего невозвожно без ручного переделывания заставить библиотеку работать. -->
