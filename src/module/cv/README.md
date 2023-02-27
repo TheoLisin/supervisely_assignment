@@ -23,3 +23,22 @@ Pros:
 
 Cons:
 - difficulty in the selection of good promts;
+
+## Img2Img with text prompts
+Pros:
+- easier to choose the right prompt;
+
+Cons:
+- low variability of generated images (even at high "temperatures");
+- need more time to select images for prompts;
+
+# Results
+Both classification models trained on Text2Img and Img2Img primitives show pure results on real data, however Text2Img generated more diversified primitives. Therefore, despite the small number of primitives, the per-class metrics turned out to be a little better.
+
+Img2Img:
+![Img2Img](../../../artifacts/tmodel.png)
+Text2Img:
+![Img2Img](../../../artifacts/smodel.png)
+
+
+# Conclusion
