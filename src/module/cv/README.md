@@ -40,5 +40,25 @@ Img2Img:
 Text2Img:
 ![Img2Img](../../../artifacts/smodel.png)
 
+## Examples
+Generation UI:
+![Generation](../../../artifacts/generation.png)
+
+Generated image:
+![ex](../../../artifacts/p.jpg)
+
+Annotation:
+
+![an](../../../artifacts/a.png)
 
 # Conclusion
+A pipeline has been created to test picture creation models.
+It is simple to use and allows experiments to simply switch one generation model with another.
+
+I received mediocre results due to a small number of experiments (the most of my effort was focused on infrastructure building).
+Nonetheless, there are some suggestions for how to enhance it:
+
+- try another generation models;
+- increase number of base primitives;
+- play with backgounds (they were picked once and never changed);
+- investigate real data in greater depth; because I am unable to correctly define some sorts of apples on my own, this produces bias during generation process and marking.
